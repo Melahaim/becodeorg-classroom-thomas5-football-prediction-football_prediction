@@ -26,6 +26,199 @@ from sklearn.metrics import accuracy_score
 import warnings
 warnings.filterwarnings('ignore')
 
+# 👕 MAILLOTS DES ÉQUIPES BELGES - Basé sur FIFA 25
+TEAM_JERSEYS = {
+    # Équipes Pro League Belge
+    "Club Brugge": {
+        "home": {"primary": "#0B4FA0", "secondary": "#FFFFFF", "name": "Bleu/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#0B4FA0", "name": "Blanc/Bleu"}
+    },
+    "Anderlecht": {
+        "home": {"primary": "#8B3F99", "secondary": "#FFFFFF", "name": "Violet/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#8B3F99", "name": "Blanc/Violet"}
+    },
+    "KRC Genk": {
+        "home": {"primary": "#0066CC", "secondary": "#FFFFFF", "name": "Bleu/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#0066CC", "name": "Blanc/Bleu"}
+    },
+    "Antwerp": {
+        "home": {"primary": "#D32F2F", "secondary": "#FFFFFF", "name": "Rouge/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#D32F2F", "name": "Blanc/Rouge"}
+    },
+    "Union Saint-Gilloise": {
+        "home": {"primary": "#FFD700", "secondary": "#0066CC", "name": "Jaune/Bleu"},
+        "away": {"primary": "#0066CC", "secondary": "#FFD700", "name": "Bleu/Jaune"}
+    },
+    "KAA Gent": {
+        "home": {"primary": "#1976D2", "secondary": "#FFFFFF", "name": "Bleu/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#1976D2", "name": "Blanc/Bleu"}
+    },
+    "Standard": {
+        "home": {"primary": "#C62D42", "secondary": "#FFFFFF", "name": "Rouge/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#C62D42", "name": "Blanc/Rouge"}
+    },
+    "Charleroi": {
+        "home": {"primary": "#000000", "secondary": "#FFFFFF", "name": "Noir/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#000000", "name": "Blanc/Noir"}
+    },
+    "Westerlo": {
+        "home": {"primary": "#FFD700", "secondary": "#000000", "name": "Jaune/Noir"},
+        "away": {"primary": "#000000", "secondary": "#FFD700", "name": "Noir/Jaune"}
+    },
+    "Mechelen": {
+        "home": {"primary": "#FFD700", "secondary": "#D32F2F", "name": "Jaune/Rouge"},
+        "away": {"primary": "#FFFFFF", "secondary": "#D32F2F", "name": "Blanc/Rouge"}
+    },
+    "Sint-Truiden": {
+        "home": {"primary": "#FFD700", "secondary": "#0066CC", "name": "Jaune/Bleu"},
+        "away": {"primary": "#FFFFFF", "secondary": "#0066CC", "name": "Blanc/Bleu"}
+    },
+    "Cercle Brugge": {
+        "home": {"primary": "#228B22", "secondary": "#000000", "name": "Vert/Noir"},
+        "away": {"primary": "#FFFFFF", "secondary": "#228B22", "name": "Blanc/Vert"}
+    },
+    "Kortrijk": {
+        "home": {"primary": "#D32F2F", "secondary": "#FFFFFF", "name": "Rouge/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#D32F2F", "name": "Blanc/Rouge"}
+    },
+    "OH Leuven": {
+        "home": {"primary": "#FFFFFF", "secondary": "#000000", "name": "Blanc/Noir"},
+        "away": {"primary": "#000000", "secondary": "#FFFFFF", "name": "Noir/Blanc"}
+    },
+    "Beerschot": {
+        "home": {"primary": "#8B3F99", "secondary": "#FFFFFF", "name": "Violet/Blanc"},
+        "away": {"primary": "#FFFFFF", "secondary": "#8B3F99", "name": "Blanc/Violet"}
+    },
+    "Dender": {
+        "home": {"primary": "#FFD700", "secondary": "#000000", "name": "Jaune/Noir"},
+        "away": {"primary": "#000000", "secondary": "#FFD700", "name": "Noir/Jaune"}
+    }
+}
+
+# ✨ FONCTIONS D'AFFICHAGE DES MAILLOTS
+def display_team_jersey(team_name, jersey_type="home", size="small"):
+    """Affiche un maillot d'équipe avec les couleurs correspondantes"""
+    if team_name in TEAM_JERSEYS:
+        jersey = TEAM_JERSEYS[team_name][jersey_type]
+        
+        if size == "small":
+            height = "25px"
+            width = "35px"
+        else:
+            height = "40px"
+            width = "50px"
+            
+        jersey_html = f"""
+        <div style="
+            display: inline-flex;
+            align-items: center;
+            margin-right: 8px;
+            margin-bottom: 5px;
+        ">
+            <div style="
+                width: {width};
+                height: {height};
+                background: linear-gradient(135deg, {jersey['primary']} 0%, {jersey['primary']} 60%, {jersey['secondary']} 60%, {jersey['secondary']} 100%);
+                border: 2px solid #555;
+                border-radius: 6px;
+                margin-right: 6px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+            ">
+                <div style="
+                    width: 75%;
+                    height: 75%;
+                    background: {jersey['primary']};
+                    border-radius: 3px;
+                    border: 1px solid {jersey['secondary']};
+                "></div>
+            </div>
+            <span style="
+                font-size: {'11px' if size == 'small' else '13px'};
+                font-weight: 600;
+                color: {jersey['primary']};
+                text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            ">{jersey['name']}</span>
+        </div>
+        """
+        return jersey_html
+    return ""
+
+def create_team_selector_with_jerseys(label, teams, key, jersey_type="home"):
+    """Crée un sélecteur d'équipe avec affichage des maillots"""
+    st.markdown(f"**👕 {label}**")
+    
+    # Afficher un aperçu des maillots des équipes principales
+    main_teams = ["Club Brugge", "Anderlecht", "KRC Genk", "Antwerp", "Union Saint-Gilloise", "KAA Gent"]
+    available_main_teams = [team for team in main_teams if team in teams]
+    
+    if available_main_teams:
+        st.markdown("**Équipes principales :**")
+        jersey_display = ""
+        for team in available_main_teams:
+            jersey_display += display_team_jersey(team, jersey_type, "small")
+        
+        if jersey_display:
+            st.markdown(jersey_display, unsafe_allow_html=True)
+    
+    # Sélecteur d'équipe
+    selected_team = st.selectbox(
+        f"Choisir l'équipe {label.lower().replace('équipe ', '')}:",
+        teams,
+        key=key
+    )
+    
+    # Afficher le maillot de l'équipe sélectionnée
+    if selected_team and selected_team in TEAM_JERSEYS:
+        st.markdown("**Maillot sélectionné :**")
+        jersey_html = display_team_jersey(selected_team, jersey_type, "large")
+        st.markdown(jersey_html, unsafe_allow_html=True)
+    
+    return selected_team
+
+def display_match_preview(home_team, away_team):
+    """Affiche un aperçu du match avec les maillots des équipes"""
+    if home_team and away_team and home_team in TEAM_JERSEYS and away_team in TEAM_JERSEYS:
+        st.markdown("### ⚽ Aperçu du Match")
+        
+        # Créer l'affichage du match
+        col1, col2, col3 = st.columns([2, 1, 2])
+        
+        with col1:
+            # Équipe domicile avec maillot home
+            home_jersey = display_team_jersey(home_team, "home", "large")
+            st.markdown(f"""
+            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%); border-radius: 10px; margin-bottom: 10px;">
+                <h4 style="color: white; margin-bottom: 10px;">🏠 DOMICILE</h4>
+                {home_jersey}
+                <h3 style="color: white; margin-top: 10px;">{home_team}</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div style="text-align: center; padding: 20px;">
+                <h2 style="color: #667eea; margin: 0;">VS</h2>
+                <div style="font-size: 24px; margin: 10px 0;">⚽</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            # Équipe extérieur avec maillot away
+            away_jersey = display_team_jersey(away_team, "away", "large")
+            st.markdown(f"""
+            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%); border-radius: 10px; margin-bottom: 10px;">
+                <h4 style="color: white; margin-bottom: 10px;">✈️ EXTÉRIEUR</h4>
+                {away_jersey}
+                <h3 style="color: white; margin-top: 10px;">{away_team}</h3>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+
 # Configuration de la page
 st.set_page_config(
     page_title="⚽ Football Prediction V4.0",
@@ -1086,8 +1279,7 @@ def show_prediction_interface(data, selected_seasons, team_stats, teams):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("### 🏠 Équipe à Domicile")
-        home_team = st.selectbox("Sélectionner:", teams, key="home_clean")
+        home_team = create_team_selector_with_jerseys("Équipe à Domicile 🏠", teams, "home_clean", "home")
         
         if home_team and home_team in team_stats:
             stats = team_stats[home_team]
@@ -1099,8 +1291,7 @@ def show_prediction_interface(data, selected_seasons, team_stats, teams):
                 st.plotly_chart(chart, use_container_width=True, key=f"chart_home_{home_team}")
     
     with col2:
-        st.markdown("### ✈️ Équipe à l'Extérieur")
-        away_team = st.selectbox("Sélectionner:", teams, key="away_clean")
+        away_team = create_team_selector_with_jerseys("Équipe à l'Extérieur ✈️", teams, "away_clean", "away")
         
         if away_team and away_team in team_stats:
             stats = team_stats[away_team]
@@ -1110,6 +1301,10 @@ def show_prediction_interface(data, selected_seasons, team_stats, teams):
             chart = create_team_performance_chart(team_stats, away_team)
             if chart:
                 st.plotly_chart(chart, use_container_width=True, key=f"chart_away_{away_team}")
+    
+    # Affichage de l'aperçu du match avec les maillots
+    if home_team and away_team and home_team != away_team:
+        display_match_preview(home_team, away_team)
     
     # Bouton de prédiction
     if st.button("🔮 PRÉDIRE LE MATCH", type="primary"):
@@ -1123,27 +1318,37 @@ def show_prediction_interface(data, selected_seasons, team_stats, teams):
                     st.markdown("---")
                     st.markdown("### 🏆 Résultat de la Prédiction")
                     
-                    # Affichage du score
+                    # Affichage du score avec maillots
                     col1, col2, col3 = st.columns([1, 2, 1])
                     with col2:
+                        home_jersey_small = display_team_jersey(home_team, "home", "small") if home_team in TEAM_JERSEYS else ""
+                        away_jersey_small = display_team_jersey(away_team, "away", "small") if away_team in TEAM_JERSEYS else ""
+                        
                         st.markdown(f"""
                         <div style="text-align: center; background: linear-gradient(135deg, #667eea, #764ba2); 
                                     padding: 2rem; border-radius: 15px; color: white; margin: 1rem 0;">
-                            <h3>{home_team} 🆚 {away_team}</h3>
+                            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1rem;">
+                                {home_jersey_small}
+                                <span style="margin: 0 1rem; font-size: 1.2rem;">{home_team} 🆚 {away_team}</span>
+                                {away_jersey_small}
+                            </div>
                             <h1 style="font-size: 3rem; margin: 1rem 0;">{home_pred:.1f} - {away_pred:.1f}</h1>
                             <p>Confiance: {confidence:.0f}%</p>
                         </div>
                         """, unsafe_allow_html=True)
                     
-                    # NOUVEAU: Affichage des probabilités de résultat
+                    # NOUVEAU: Affichage des probabilités de résultat avec maillots
                     st.markdown("### 📊 Probabilités de Résultat")
                     col_prob1, col_prob2, col_prob3 = st.columns(3)
                     
                     with col_prob1:
+                        home_jersey_large = display_team_jersey(home_team, "home", "large") if home_team in TEAM_JERSEYS else ""
                         st.markdown(f"""
                         <div style="text-align: center; background: linear-gradient(135deg, #28a745, #20c997); 
                                     padding: 1.5rem; border-radius: 15px; color: white; margin: 0.5rem 0;">
-                            <h4>🏠 Victoire {home_team}</h4>
+                            <h4>🏠 Victoire</h4>
+                            {home_jersey_large}
+                            <h5 style="margin: 0.5rem 0;">{home_team}</h5>
                             <h2 style="font-size: 2.5rem; margin: 0.5rem 0;">{probabilities['home_win']:.1f}%</h2>
                         </div>
                         """, unsafe_allow_html=True)
@@ -1153,15 +1358,19 @@ def show_prediction_interface(data, selected_seasons, team_stats, teams):
                         <div style="text-align: center; background: linear-gradient(135deg, #ffc107, #fd7e14); 
                                     padding: 1.5rem; border-radius: 15px; color: white; margin: 0.5rem 0;">
                             <h4>⚖️ Match Nul</h4>
+                            <div style="margin: 1rem 0; font-size: 2rem;">🤝</div>
                             <h2 style="font-size: 2.5rem; margin: 0.5rem 0;">{probabilities['draw']:.1f}%</h2>
                         </div>
                         """, unsafe_allow_html=True)
                     
                     with col_prob3:
+                        away_jersey_large = display_team_jersey(away_team, "away", "large") if away_team in TEAM_JERSEYS else ""
                         st.markdown(f"""
                         <div style="text-align: center; background: linear-gradient(135deg, #dc3545, #e83e8c); 
                                     padding: 1.5rem; border-radius: 15px; color: white; margin: 0.5rem 0;">
-                            <h4>✈️ Victoire {away_team}</h4>
+                            <h4>✈️ Victoire</h4>
+                            {away_jersey_large}
+                            <h5 style="margin: 0.5rem 0;">{away_team}</h5>
                             <h2 style="font-size: 2.5rem; margin: 0.5rem 0;">{probabilities['away_win']:.1f}%</h2>
                         </div>
                         """, unsafe_allow_html=True)
